@@ -34,6 +34,7 @@ claude plugin marketplace add ~/.claude-skills/{{ORG_SLUG}}
 claude plugin install {{ORG_SLUG}}-databricks-skills@{{ORG_SLUG}}-marketplace
 claude plugin install {{ORG_SLUG}}-internal-skills@{{ORG_SLUG}}-marketplace
 claude plugin install {{ORG_SLUG}}-marketplace-management@{{ORG_SLUG}}-marketplace
+claude plugin install {{ORG_SLUG}}-specialized-tools@{{ORG_SLUG}}-marketplace
 ```
 
 ## Plugins
@@ -63,6 +64,14 @@ Marketplace self-management skills.
 | Skill | Description | Invocation |
 |-------|-------------|------------|
 | `update-skills` | Pull latest changes, re-register marketplace, re-install all plugins | `/update-skills` |
+
+### specialized-tools
+
+Specialized utility tools for diagrams, conversions, and more.
+
+| Skill | Description | Invocation |
+|-------|-------------|------------|
+| `lucid-diagram` | Generate architecture/data flow/sequence diagrams as Graphviz DOT and convert to PNG + Lucid Chart XML | `/lucid-diagram` |
 
 ## Adding a New Skill
 
@@ -103,6 +112,7 @@ plugins/
   databricks-skills/      Databricks workflow skills
   internal-skills/        Internal workflow & productivity skills
   marketplace-management/ Marketplace self-management skills
+  specialized-tools/      Specialized utility tools (diagrams, etc.)
 templates/                Scaffolding templates for new skills
 scripts/                  Repo management (init, install, validate)
 docs/                     Documentation

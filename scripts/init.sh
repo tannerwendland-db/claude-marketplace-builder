@@ -100,6 +100,7 @@ FILES_TO_REPLACE=(
   "plugins/internal-skills/.claude-plugin/plugin.json"
   "plugins/marketplace-management/.claude-plugin/plugin.json"
   "plugins/marketplace-management/skills/update-skills/SKILL.md"
+  "plugins/specialized-tools/.claude-plugin/plugin.json"
   "scripts/install.sh"
   "docs/INSTALL.md"
   "docs/CONTRIBUTING.md"
