@@ -187,10 +187,12 @@ mv plugins/<plugin>/skills/my-skill/SKILL.md.template plugins/<plugin>/skills/my
 
 ## Testing Your Skill
 
-1. Register locally: `claude plugin marketplace add .`
-2. Install: `claude plugin install <org-slug>-claude-skills@<org-slug>-marketplace`
-3. Test invocation: `/my-skill` or use natural language
-4. Validate structure: `bash scripts/validate-skill.sh plugins/<plugin>/skills/my-skill`
+1. Validate structure: `bash scripts/validate-skill.sh plugins/<plugin>/skills/my-skill`
+2. Register locally: `claude plugin marketplace add .`
+3. Install the plugin: `claude plugin install <org-slug>-<plugin-name>@<org-slug>-marketplace`
+4. Test invocation: `/my-skill` or use natural language
+
+You can also validate all skills at once: `bash scripts/validate-skill.sh --all`
 
 ## Common Mistakes
 

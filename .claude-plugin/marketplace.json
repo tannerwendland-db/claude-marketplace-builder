@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "{{ORG_NAME}}'s private Claude Code skills marketplace",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "plugins": [
     {
@@ -28,6 +28,16 @@
         "name": "{{TEAM_NAME}}"
       },
       "category": "enterprise"
+    },
+    {
+      "name": "{{ORG_SLUG}}-marketplace-management",
+      "source": "./plugins/marketplace-management",
+      "description": "{{ORG_NAME}}'s marketplace self-management skills for Claude Code",
+      "version": "1.0.0",
+      "author": {
+        "name": "{{TEAM_NAME}}"
+      },
+      "category": "marketplace"
     }
   ]
 }

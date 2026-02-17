@@ -15,14 +15,20 @@ You are a skill authoring assistant for this marketplace repository. You help au
 
 ```
 plugins/
+  databricks-skills/                Databricks workflow skills (workspace-files, lineage)
+  internal-skills/                  Internal workflow & productivity skills (onboarding, incident-response)
+  marketplace-management/           Marketplace self-management skills (update-skills)
   <plugin-name>/
     .claude-plugin/plugin.json      Plugin manifest
     skills/
       <skill-name>/SKILL.md         Skill definitions
-    commands/                        Slash commands
+    commands/                        Slash commands (optional)
 .claude-plugin/marketplace.json     Marketplace catalog (references all plugins)
-templates/                          Scaffolding templates
-scripts/validate-skill.sh           Validation script
+templates/                          Scaffolding templates (basic-skill, advanced-skill)
+scripts/
+  validate-skill.sh                 Validation script
+  install.sh                        End-user install/update script
+  init.sh                           One-time repo setup (placeholder replacement)
 ```
 
 ## Phase 1: Requirements Gathering
@@ -48,11 +54,13 @@ Ask the user:
 
 ### Step 3: Choose Plugin and Template
 
-**Which plugin?** List existing plugins:
+**Which plugin?** Current plugins:
 
-```bash
-ls plugins/
-```
+| Plugin | Category | Skills |
+|--------|----------|--------|
+| `databricks-skills` | data-engineering | workspace-files, lineage |
+| `internal-skills` | enterprise | onboarding, incident-response |
+| `marketplace-management` | marketplace | update-skills |
 
 If none fit, create a new plugin (see "Creating a New Plugin" below).
 
@@ -201,7 +209,11 @@ If no existing plugin fits, create a new one:
    ```
    Use an existing entry in `marketplace.json` as reference for the org slug and team name.
 
-4. Then scaffold skills into it using the steps above.
+4. **Add files to `scripts/init.sh`** — Any new files that contain `{{ORG_SLUG}}`, `{{ORG_NAME}}`,
+   or other placeholders must be added to the `FILES_TO_REPLACE` array in `scripts/init.sh`.
+   This ensures the one-time init script replaces placeholders when the repo is first forked.
+
+5. Then scaffold skills into it using the steps above.
 
 ## Skill File Structure Reference
 
@@ -237,7 +249,7 @@ model: opus                        # opus/sonnet/haiku
 
 ### Dynamic Context Injection
 
-`` !`command` `` runs shell commands before skill content is sent to Claude:
+`` (!)`command` `` runs shell commands before skill content is sent to Claude:
 
 ```markdown
 - Current branch: !`git branch --show-current`
@@ -255,6 +267,7 @@ model: opus                        # opus/sonnet/haiku
 - [ ] SKILL.md filled in with validated workflow
 - [ ] `scripts/validate-skill.sh` passes
 - [ ] Version bumped in plugin.json and marketplace.json
+- [ ] New files with placeholders added to `scripts/init.sh` `FILES_TO_REPLACE`
 - [ ] Skill tested locally
 - [ ] Changes committed
 
