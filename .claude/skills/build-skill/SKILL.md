@@ -15,9 +15,10 @@ You are a skill authoring assistant for this marketplace repository. You help au
 
 ```
 plugins/
-  databricks-skills/                Databricks workflow skills (workspace-files, lineage)
+  databricks-skills/                Databricks workflow skills (databricks-workspace-files, databricks-lineage)
   internal-skills/                  Internal workflow & productivity skills (onboarding, incident-response)
   marketplace-management/           Marketplace self-management skills (update-skills)
+  specialized-tools/                Specialized utility tools (lucid-diagram)
   <plugin-name>/
     .claude-plugin/plugin.json      Plugin manifest
     skills/
@@ -58,9 +59,10 @@ Ask the user:
 
 | Plugin | Category | Skills |
 |--------|----------|--------|
-| `databricks-skills` | data-engineering | workspace-files, lineage |
+| `databricks-skills` | data-engineering | databricks-workspace-files, databricks-lineage |
 | `internal-skills` | enterprise | onboarding, incident-response |
 | `marketplace-management` | marketplace | update-skills |
+| `specialized-tools` | utilities | lucid-diagram |
 
 If none fit, create a new plugin (see "Creating a New Plugin" below).
 

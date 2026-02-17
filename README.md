@@ -13,7 +13,7 @@ A private Claude Code skills marketplace for {{ORG_NAME}}. Fork this template, r
 git clone {{REPO_URL}}
 cd claude-marketplace-builder
 
-# 3. Run the init script
+# 3. Run the init script to replace placeholders with your org details
 bash scripts/init.sh
 
 # 4. Push to your remote
@@ -45,16 +45,16 @@ Databricks workflow skills for data engineering teams.
 
 | Skill | Description | Invocation |
 |-------|-------------|------------|
-| `workspace-files` | Explore Databricks workspace files via CLI | Auto-activates on workspace file questions |
-| `lineage` | Trace Unity Catalog data lineage | Auto-activates on lineage questions |
+| `databricks-workspace-files` | Explore Databricks workspace files via CLI | Auto-activates on workspace file questions |
+| `databricks-lineage` | Trace Unity Catalog data lineage | Auto-activates on lineage questions |
 
 ### internal-skills
 
-Internal workflow and productivity skills.
+Internal workflow and productivity skills. These ship as customizable templates — fill in the TODO sections to match your team's processes.
 
 | Skill | Description | Invocation |
 |-------|-------------|------------|
-| `onboarding` | Guide new hires through setup | Auto-activates on onboarding questions |
+| `onboarding` | Guide new hires through environment setup | Auto-activates on onboarding questions |
 | `incident-response` | Production incident triage & response | `/incident-response` |
 
 ### marketplace-management
@@ -90,7 +90,12 @@ Or manually:
 3. Rename: `mv plugins/<plugin>/skills/my-skill/SKILL.md.template plugins/<plugin>/skills/my-skill/SKILL.md`
 4. Edit the SKILL.md with your content
 5. Validate: `bash scripts/validate-skill.sh plugins/<plugin>/skills/my-skill`
-6. Bump version, open a PR
+6. Bump version in the plugin's `plugin.json` and root `marketplace.json`
+7. Open a PR
+
+Two templates are available:
+- **basic-skill** — Knowledge/guidance-only skills with no scripts or references
+- **advanced-skill** — Skills with helper scripts and reference documents
 
 ## Adding a New Plugin
 
@@ -99,23 +104,50 @@ To create a new skill group (e.g., `plugins/security-skills/`):
 1. Create the directory structure under `plugins/`
 2. Add a `.claude-plugin/plugin.json` manifest
 3. Add an entry to `.claude-plugin/marketplace.json`
-4. Add skills under the new plugin's `skills/` directory
+4. Add the plugin's `plugin.json` path to the `FILES_TO_REPLACE` array in `scripts/init.sh`
+5. Add skills under the new plugin's `skills/` directory
 
-See `CLAUDE.md` for detailed instructions.
+See `CLAUDE.md` and `docs/SKILL-AUTHORING.md` for detailed instructions.
 
 ## Project Structure
 
 ```
-.claude-plugin/           Marketplace catalog
-.claude/skills/           Repo-scoped authoring tools (build-skill)
+.claude-plugin/
+  marketplace.json                 Root marketplace catalog
 plugins/
-  databricks-skills/      Databricks workflow skills
-  internal-skills/        Internal workflow & productivity skills
-  marketplace-management/ Marketplace self-management skills
-  specialized-tools/      Specialized utility tools (diagrams, etc.)
-templates/                Scaffolding templates for new skills
-scripts/                  Repo management (init, install, validate)
-docs/                     Documentation
+  databricks-skills/               Databricks workflow skills
+    .claude-plugin/plugin.json
+    skills/
+      databricks-workspace-files/  Workspace file explorer (with scripts/)
+      databricks-lineage/          Unity Catalog lineage tracer (with scripts/)
+  internal-skills/                 Internal workflow & productivity skills
+    .claude-plugin/plugin.json
+    skills/
+      onboarding/                  New hire setup guide (template)
+      incident-response/           Incident triage & response (template)
+  marketplace-management/          Marketplace self-management
+    .claude-plugin/plugin.json
+    skills/
+      update-skills/               Pull latest and re-register plugins
+  specialized-tools/               Specialized utility tools
+    .claude-plugin/plugin.json
+    skills/
+      lucid-diagram/               Diagram generation (with scripts/ and references/)
+.claude/
+  skills/
+    build-skill/SKILL.md           Repo-scoped authoring tool (NOT distributed)
+templates/
+  basic-skill/                     Simple skill template (no scripts)
+  advanced-skill/                  Full skill template (scripts + references)
+scripts/
+  init.sh                          One-time setup — replaces {{placeholders}}
+  install.sh                       End-user install and update
+  update.sh                        Safe update from within Claude Code
+  validate-skill.sh                Validates skill structure and frontmatter
+docs/
+  INSTALL.md                       Installation guide
+  SKILL-AUTHORING.md               Skill authoring guide
+  CONTRIBUTING.md                  Contributing guidelines
 ```
 
 Note: `.claude/skills/build-skill/` is a **repo-scoped** skill for authors working in this repository. It is NOT distributed to end users — only plugin skills under `plugins/` are distributed.

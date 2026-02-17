@@ -6,26 +6,41 @@ This is {{ORG_NAME}}'s private Claude Code skills marketplace. It contains multi
 
 ```
 .claude-plugin/
-  marketplace.json                 Marketplace catalog — references all plugins
+  marketplace.json                 Root marketplace catalog
 plugins/
   databricks-skills/               Databricks workflow skills
     .claude-plugin/plugin.json
     skills/
-      workspace-files/
-      lineage/
+      databricks-workspace-files/  Workspace file explorer (with scripts/)
+      databricks-lineage/          Unity Catalog lineage tracer (with scripts/)
   internal-skills/                 Internal workflow & productivity skills
     .claude-plugin/plugin.json
     skills/
-      onboarding/
-      incident-response/
-    commands/
-      update-skills.md
+      onboarding/                  New hire setup guide (template)
+      incident-response/           Incident triage & response (template)
+  marketplace-management/          Marketplace self-management
+    .claude-plugin/plugin.json
+    skills/
+      update-skills/               Pull latest and re-register plugins
+  specialized-tools/               Specialized utility tools
+    .claude-plugin/plugin.json
+    skills/
+      lucid-diagram/               Diagram generation (with scripts/ and references/)
 .claude/
   skills/
     build-skill/SKILL.md           Repo-scoped authoring tool (NOT distributed)
-templates/                         Scaffolding templates for new skills
-scripts/                           Repo management (init, install, validate)
-docs/                              Documentation for contributors and users
+templates/
+  basic-skill/                     Simple skill template (no scripts)
+  advanced-skill/                  Full skill template (scripts + references)
+scripts/
+  init.sh                          One-time setup — replaces {{placeholders}}
+  install.sh                       End-user install and update
+  update.sh                        Safe update from within Claude Code
+  validate-skill.sh                Validates skill structure and frontmatter
+docs/
+  INSTALL.md                       Installation guide
+  SKILL-AUTHORING.md               Skill authoring guide
+  CONTRIBUTING.md                  Contributing guidelines
 ```
 
 ## Adding a Skill
@@ -45,7 +60,8 @@ To add a new plugin group (e.g., `plugins/security-skills/`):
 1. Create the directory: `mkdir -p plugins/security-skills/.claude-plugin plugins/security-skills/skills plugins/security-skills/commands`
 2. Create `plugins/security-skills/.claude-plugin/plugin.json` (copy from an existing plugin)
 3. Add an entry to `.claude-plugin/marketplace.json` in the `plugins` array
-4. Add skills under `plugins/security-skills/skills/`
+4. Add the plugin's `plugin.json` path to the `FILES_TO_REPLACE` array in `scripts/init.sh`
+5. Add skills under `plugins/security-skills/skills/`
 
 ## Skill Frontmatter
 
@@ -67,6 +83,8 @@ allowed-tools: Read, Bash     # optional — tools allowed without confirmation
 claude plugin marketplace add .
 claude plugin install {{ORG_SLUG}}-databricks-skills@{{ORG_SLUG}}-marketplace
 claude plugin install {{ORG_SLUG}}-internal-skills@{{ORG_SLUG}}-marketplace
+claude plugin install {{ORG_SLUG}}-marketplace-management@{{ORG_SLUG}}-marketplace
+claude plugin install {{ORG_SLUG}}-specialized-tools@{{ORG_SLUG}}-marketplace
 ```
 
 ## Version Bumping

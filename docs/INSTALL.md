@@ -4,6 +4,7 @@
 
 - **git** — [Install git](https://git-scm.com/downloads)
 - **Claude Code CLI** — `npm install -g @anthropic-ai/claude-code`
+- **jq** — [Install jq](https://jqlang.github.io/jq/download/) (used by the install script to discover plugins)
 - **Repository access** — You must have access to the {{ORG_NAME}} skills repository
 
 ## One-Line Install
@@ -31,17 +32,13 @@ claude plugin marketplace add ~/.claude-skills/{{ORG_SLUG}}
 # Install plugins
 claude plugin install {{ORG_SLUG}}-databricks-skills@{{ORG_SLUG}}-marketplace
 claude plugin install {{ORG_SLUG}}-internal-skills@{{ORG_SLUG}}-marketplace
+claude plugin install {{ORG_SLUG}}-marketplace-management@{{ORG_SLUG}}-marketplace
+claude plugin install {{ORG_SLUG}}-specialized-tools@{{ORG_SLUG}}-marketplace
 ```
 
 ## Verifying Installation
 
-After installation, open Claude Code and try:
-
-```
-/build-skill
-```
-
-You should see the build-skill wizard start. You can also check installed plugins:
+After installation, check installed plugins:
 
 ```bash
 claude plugin list
@@ -81,7 +78,5 @@ npm install -g @anthropic-ai/claude-code
 2. Verify plugins are installed: `claude plugin list`
 3. Try reinstalling:
    ```bash
-   claude plugin marketplace add ~/.claude-skills/{{ORG_SLUG}}
-   claude plugin install {{ORG_SLUG}}-databricks-skills@{{ORG_SLUG}}-marketplace
-   claude plugin install {{ORG_SLUG}}-internal-skills@{{ORG_SLUG}}-marketplace
+   bash ~/.claude-skills/{{ORG_SLUG}}/scripts/install.sh
    ```
