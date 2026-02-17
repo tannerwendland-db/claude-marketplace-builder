@@ -184,7 +184,22 @@ If no existing plugin fits, create a new one:
    ```
    Use the org slug from an existing plugin.json as reference.
 
-3. Add the plugin to `.claude-plugin/marketplace.json` in the `plugins` array.
+3. **Register the plugin in `.claude-plugin/marketplace.json`** — This is critical.
+   `scripts/install.sh` dynamically reads this file to discover and install all plugins.
+   If the plugin is not listed here, end users will never receive it.
+
+   Add an entry to the `plugins` array:
+   ```json
+   {
+     "name": "<org-slug>-<new-plugin>",
+     "source": "./plugins/<new-plugin>",
+     "description": "Description of what this plugin provides",
+     "version": "1.0.0",
+     "author": { "name": "<team-name>" },
+     "category": "<category>"
+   }
+   ```
+   Use an existing entry in `marketplace.json` as reference for the org slug and team name.
 
 4. Then scaffold skills into it using the steps above.
 
