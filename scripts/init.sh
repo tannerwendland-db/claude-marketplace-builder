@@ -102,6 +102,7 @@ FILES_TO_REPLACE=(
   "plugins/marketplace-management/skills/update-skills/SKILL.md"
   "plugins/specialized-tools/.claude-plugin/plugin.json"
   "scripts/install.sh"
+  "scripts/update.sh"
   "docs/INSTALL.md"
   "docs/CONTRIBUTING.md"
   "docs/SKILL-AUTHORING.md"
