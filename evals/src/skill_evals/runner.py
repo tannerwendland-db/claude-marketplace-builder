@@ -248,7 +248,8 @@ async def run_and_report(tests: list[TestCase], args: argparse.Namespace) -> Non
     passed = sum(1 for r in results if r.passed)
     total = len(results)
     pass_percentage = (passed / total * 100) if total > 0 else 0
-    passed_threshold = pass_percentage >= 95.0
+    threshold = args.threshold
+    passed_threshold = pass_percentage >= threshold
 
     print(f"\n{'=' * 50}")
     print(f"Results: {passed}/{total} passed ({pass_percentage:.1f}%)")
@@ -257,10 +258,10 @@ async def run_and_report(tests: list[TestCase], args: argparse.Namespace) -> Non
         failed_tests = [r for r in results if not r.passed]
 
         if passed_threshold:
-            print(f"\nPASSED with warnings (>= 95% threshold met)")
+            print(f"\nPASSED with warnings (>= {threshold}% threshold met)")
             print(f"\nWarning: {len(failed_tests)} test(s) failed but within acceptable threshold:")
         else:
-            print(f"\nFAILED ({pass_percentage:.1f}% < 95% threshold)")
+            print(f"\nFAILED ({pass_percentage:.1f}% < {threshold}% threshold)")
             print("\nFailed tests:")
 
         for r in failed_tests:
@@ -285,6 +286,7 @@ Examples:
   skill-evals --timeout 120                Run with longer timeout
   skill-evals -j 15                        Run 15 tests in parallel
   skill-evals -f update-skills             Run only matching tests
+  skill-evals --threshold 80               Pass if >= 80% of tests pass
         """,
     )
     parser.add_argument(
@@ -318,6 +320,12 @@ Examples:
         type=str,
         default=None,
         help="Only run tests whose name contains this string",
+    )
+    parser.add_argument(
+        "--threshold",
+        type=float,
+        default=95.0,
+        help="Minimum pass percentage to exit 0 (default: 95.0)",
     )
     args = parser.parse_args()
 
