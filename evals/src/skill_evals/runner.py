@@ -42,6 +42,12 @@ async def run_prompt_and_collect_skills(
     """Run a prompt via Agent SDK, return (skills_invoked, tool_calls, result_info)."""
     logger.debug("Building ClaudeAgentOptions: plugins=%s, max_turns=%d, model=%s, cwd=%s",
                  REPO_ROOT, max_turns, model, REPO_ROOT)
+    stderr_lines: list[str] = []
+
+    def capture_stderr(line: str) -> None:
+        stderr_lines.append(line)
+        logger.debug("CLI stderr: %s", line.rstrip())
+
     options = ClaudeAgentOptions(
         plugins=[{"type": "local", "path": str(REPO_ROOT)}],
         allowed_tools=["Skill", "Read", "Glob", "Grep", "Bash"],
@@ -55,6 +61,7 @@ async def run_prompt_and_collect_skills(
         max_turns=max_turns,
         model=model,
         cwd=str(REPO_ROOT),
+        stderr=capture_stderr,
     )
 
     skills_invoked: list[str] = []
@@ -89,6 +96,7 @@ async def run_prompt_and_collect_skills(
                          message.total_cost_usd, message.is_error, message.duration_ms)
 
     logger.debug("Query complete: skills_invoked=%s", skills_invoked)
+    result_info["stderr"] = "".join(stderr_lines)
     return skills_invoked, tool_calls, result_info
 
 
@@ -137,13 +145,19 @@ async def run_test(test: TestCase, timeout: int = 180) -> TestResult:
             error=f"Timed out after {timeout}s",
         )
     except Exception as e:
+        stderr = result_info.get("stderr", "")
         logger.debug("[%s] Exception: %s", test.name, e, exc_info=True)
+        if stderr:
+            logger.debug("[%s] CLI stderr:\n%s", test.name, stderr)
+        error_msg = str(e)
+        if stderr:
+            error_msg = f"{error_msg}\nstderr: {stderr.strip()}"
         return TestResult(
             name=test.name,
             passed=False,
             expected="completion",
             actual="error",
-            error=str(e),
+            error=error_msg,
         )
 
     def skill_matches(expected: str, invoked_skills: set[str]) -> bool:
