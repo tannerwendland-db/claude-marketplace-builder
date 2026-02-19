@@ -10,6 +10,7 @@ import argparse
 import asyncio
 import json
 import logging
+import random
 import sys
 from pathlib import Path
 
@@ -34,10 +35,16 @@ EVALS_DIR = Path(__file__).resolve().parent.parent.parent
 REPO_ROOT = EVALS_DIR.parent
 
 
+def _is_rate_limit_error(exc: BaseException) -> bool:
+    """Check if an exception is a rate limit error from the CLI subprocess."""
+    return "rate_limit" in str(exc).lower()
+
+
 async def run_prompt_and_collect_skills(
     prompt: str,
     max_turns: int = 5,
     model: str | None = None,
+    max_retries: int = 5,
 ) -> tuple[list[str], list[dict], dict]:
     """Run a prompt via Agent SDK, return (skills_invoked, tool_calls, result_info)."""
     logger.debug("Building ClaudeAgentOptions: plugins=%s, max_turns=%d, model=%s, cwd=%s",
@@ -64,43 +71,59 @@ async def run_prompt_and_collect_skills(
         stderr=capture_stderr,
     )
 
-    skills_invoked: list[str] = []
-    tool_calls: list[dict] = []
-    result_info: dict = {}
+    for attempt in range(max_retries + 1):
+        try:
+            skills_invoked: list[str] = []
+            tool_calls: list[dict] = []
+            result_info: dict = {}
 
-    logger.debug("Starting query: %.120s", prompt)
-    async for message in query(prompt=prompt, options=options):
-        if isinstance(message, AssistantMessage):
-            for block in message.content:
-                if isinstance(block, ToolUseBlock):
-                    tool_calls.append({"tool": block.name, "input": block.input})
-                    logger.debug("ToolUseBlock: %s  input=%s", block.name,
-                                 json.dumps(block.input)[:200])
-                    if block.name == "Skill":
-                        skill_name = block.input.get("skill", "")
-                        if skill_name:
-                            skills_invoked.append(skill_name)
-                            logger.debug("Skill invoked: %s", skill_name)
+            logger.debug("Starting query (attempt %d/%d): %.120s",
+                         attempt + 1, max_retries + 1, prompt)
+            async for message in query(prompt=prompt, options=options):
+                if isinstance(message, AssistantMessage):
+                    for block in message.content:
+                        if isinstance(block, ToolUseBlock):
+                            tool_calls.append({"tool": block.name, "input": block.input})
+                            logger.debug("ToolUseBlock: %s  input=%s", block.name,
+                                         json.dumps(block.input)[:200])
+                            if block.name == "Skill":
+                                skill_name = block.input.get("skill", "")
+                                if skill_name:
+                                    skills_invoked.append(skill_name)
+                                    logger.debug("Skill invoked: %s", skill_name)
 
-        elif isinstance(message, ResultMessage):
-            result_info = {
-                "session_id": message.session_id,
-                "total_cost_usd": message.total_cost_usd,
-                "num_turns": message.num_turns,
-                "is_error": message.is_error,
-                "duration_ms": message.duration_ms,
-                "result": message.result,
-            }
-            logger.debug("ResultMessage: session=%s turns=%s cost=$%s error=%s duration=%sms",
-                         message.session_id, message.num_turns,
-                         message.total_cost_usd, message.is_error, message.duration_ms)
+                elif isinstance(message, ResultMessage):
+                    result_info = {
+                        "session_id": message.session_id,
+                        "total_cost_usd": message.total_cost_usd,
+                        "num_turns": message.num_turns,
+                        "is_error": message.is_error,
+                        "duration_ms": message.duration_ms,
+                        "result": message.result,
+                    }
+                    logger.debug("ResultMessage: session=%s turns=%s cost=$%s error=%s duration=%sms",
+                                 message.session_id, message.num_turns,
+                                 message.total_cost_usd, message.is_error, message.duration_ms)
 
-    logger.debug("Query complete: skills_invoked=%s", skills_invoked)
-    result_info["stderr"] = "".join(stderr_lines)
-    return skills_invoked, tool_calls, result_info
+            logger.debug("Query complete: skills_invoked=%s", skills_invoked)
+            result_info["stderr"] = "".join(stderr_lines)
+            return skills_invoked, tool_calls, result_info
+
+        except Exception as exc:
+            if _is_rate_limit_error(exc) and attempt < max_retries:
+                delay = (2 ** attempt) + random.uniform(0, 1)
+                logger.warning("Rate limit hit (attempt %d/%d), retrying in %.1fs...",
+                               attempt + 1, max_retries + 1, delay)
+                stderr_lines.clear()
+                await asyncio.sleep(delay)
+            else:
+                raise
+
+    # Unreachable, but satisfies type checker
+    raise RuntimeError("Exhausted retries")
 
 
-async def run_test(test: TestCase, timeout: int = 180) -> TestResult:
+async def run_test(test: TestCase, timeout: int = 180, max_retries: int = 5) -> TestResult:
     """Run a single test case and return result."""
     logger.debug("[%s] Starting test: prompt=%.120s", test.name, test.prompt)
 
@@ -110,6 +133,7 @@ async def run_test(test: TestCase, timeout: int = 180) -> TestResult:
                 test.prompt,
                 max_turns=test.max_turns,
                 model=test.model,
+                max_retries=max_retries,
             ),
             timeout=timeout,
         )
@@ -216,7 +240,7 @@ async def run_and_report(tests: list[TestCase], args: argparse.Namespace) -> Non
 
         async def bounded(test: TestCase) -> TestResult:
             async with semaphore:
-                return await run_test(test, timeout=args.timeout)
+                return await run_test(test, timeout=args.timeout, max_retries=args.max_retries)
 
         completed = await asyncio.gather(
             *[bounded(t) for t in tests], return_exceptions=True
@@ -239,7 +263,7 @@ async def run_and_report(tests: list[TestCase], args: argparse.Namespace) -> Non
     else:
         for test in tests:
             print(f"Running: {test.name}...", flush=True)
-            result = await run_test(test, timeout=args.timeout)
+            result = await run_test(test, timeout=args.timeout, max_retries=args.max_retries)
             results.append(result)
             status = "PASS" if result.passed else "FAIL"
             print(f"  {status}")
@@ -320,6 +344,12 @@ Examples:
         type=str,
         default=None,
         help="Only run tests whose name contains this string",
+    )
+    parser.add_argument(
+        "--max-retries",
+        type=int,
+        default=5,
+        help="Max retries on rate limit errors (default: 5)",
     )
     parser.add_argument(
         "--threshold",
