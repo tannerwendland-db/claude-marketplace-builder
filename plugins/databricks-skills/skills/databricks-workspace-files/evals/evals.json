@@ -1,0 +1,22 @@
+[
+  {
+    "query": "List all notebooks in the /Repos/team/etl-pipeline directory in our Databricks workspace",
+    "should_trigger": true
+  },
+  {
+    "query": "Pull the SQL file at /Workspace/Shared/analytics/daily_metrics.sql from Databricks so I can review it",
+    "should_trigger": true
+  },
+  {
+    "query": "What files are in the /Repos/analytics/data-science directory on our Databricks workspace? I want to see what notebooks the team has created",
+    "should_trigger": true
+  },
+  {
+    "query": "Show me the upstream and downstream lineage for the main.analytics.sales_report table in Unity Catalog",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to create a new all-purpose cluster in Databricks with 4 worker nodes and Spark 3.5",
+    "should_trigger": false
+  }
+]

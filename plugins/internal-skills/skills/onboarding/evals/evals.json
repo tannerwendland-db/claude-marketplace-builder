@@ -1,0 +1,18 @@
+[
+  {
+    "query": "I just joined the company yesterday and have no idea where to start. Can you walk me through the onboarding process for new engineers — what systems do I need access to and what should I set up first?",
+    "should_trigger": true
+  },
+  {
+    "query": "What are the first things a new hire should do to get set up with all the tools, accounts, and access they need in their first week?",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you help me write a Python script to automate provisioning new user accounts and setting up their laptop configuration using our standard IT templates?",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to create a new Databricks workspace for my team and set up access controls so only certain groups can use it",
+    "should_trigger": false
+  }
+]

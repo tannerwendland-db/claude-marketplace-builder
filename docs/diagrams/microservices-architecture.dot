@@ -1,0 +1,20 @@
+digraph MicroservicesArchitecture {
+    rankdir=TB;
+    node [shape=box, style="filled,rounded", fillcolor="#E8F4FD", fontname="Arial"];
+    edge [color="#333333", penwidth=1.5, fontname="Arial"];
+
+    // Message Bus - central component
+    bus [label="Message Bus", shape=box, fillcolor="#FFF2CC", style="filled,rounded", width=3];
+
+    // Microservices
+    auth [label="Auth Service", fillcolor="#DAE8FC"];
+    user [label="User Service", fillcolor="#DAE8FC"];
+    payment [label="Payment Service", fillcolor="#DAE8FC"];
+    notification [label="Notification Service", fillcolor="#DAE8FC"];
+
+    // Connections to message bus (bidirectional)
+    auth -> bus [label="publish/subscribe", dir=both];
+    user -> bus [label="publish/subscribe", dir=both];
+    payment -> bus [label="publish/subscribe", dir=both];
+    notification -> bus [label="publish/subscribe", dir=both];
+}

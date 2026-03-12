@@ -1,0 +1,22 @@
+[
+  {
+    "query": "Trace the upstream lineage for the table main.sales.orders in Databricks Unity Catalog",
+    "should_trigger": true
+  },
+  {
+    "query": "What are the column-level dependencies for the revenue column in main.finance.quarterly_report in databricks?",
+    "should_trigger": true
+  },
+  {
+    "query": "Show me the data lineage for our customer_features table in Unity Catalog — I need to know which upstream tables feed into it and what transformations are applied",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to query the main.sales.orders table to get revenue grouped by region for Q3 — can you write that SQL for me?",
+    "should_trigger": false
+  },
+  {
+    "query": "Can you help me set up a new Databricks cluster with autoscaling and attach it to our existing workspace?",
+    "should_trigger": false
+  }
+]

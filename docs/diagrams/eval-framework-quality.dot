@@ -1,0 +1,60 @@
+digraph EvalFramework {
+    rankdir=TB;
+    bgcolor="transparent";
+    dpi=200;
+    pad=0.5;
+    nodesep=0.8;
+    ranksep=0.7;
+    splines=true;
+
+    node [
+        fontname="Helvetica Neue"
+        fontsize=13
+        style="filled,rounded"
+        shape=box
+        penwidth=1.5
+        width=2.0
+        height=0.7
+    ];
+    edge [
+        color="#666666"
+        penwidth=2.0
+        arrowsize=1.0
+        fontname="Helvetica Neue"
+        fontsize=10
+    ];
+
+    // Row 1: Skill authoring triggers
+    new_skill [label="New Skill Created" fillcolor="#BBDEFB" color="#1565C0" fontcolor="#0D47A1"];
+    modify_skill [label="Skill Modified" fillcolor="#BBDEFB" color="#1565C0" fontcolor="#0D47A1"];
+
+    // Row 2: Test cases
+    test_cases [label="Write Test Cases\n(natural language prompts)" fillcolor="#E1BEE7" color="#7B1FA2" fontcolor="#4A148C" width=3.5];
+
+    // Row 3: Eval engine
+    runner [label="Eval Runner\nasync  |  parallel  |  isolated plugins" fillcolor="#AB47BC" color="#7B1FA2" fontcolor="#FFFFFF" penwidth=3.0 width=4.5 height=0.8 fontsize=14];
+
+    // Row 4: Routing check
+    routing [label="Skill Routing Verification\nDid the right skill activate?" fillcolor="#E1BEE7" color="#7B1FA2" fontcolor="#4A148C" width=3.5];
+
+    // Row 5: Threshold
+    threshold [label="Pass Threshold Gate\n(configurable %)" fillcolor="#E1BEE7" color="#7B1FA2" fontcolor="#4A148C" width=3.0];
+
+    // Row 6: Outcomes
+    deploy [label="Safe to Deploy" fillcolor="#81C784" color="#2E7D32" fontcolor="#FFFFFF" penwidth=3.0 fontsize=14 width=2.2];
+    broken [label="Fix Before Merge" fillcolor="#EF9A9A" color="#C62828" fontcolor="#B71C1C" penwidth=2.0 width=2.2];
+
+    // CI badge
+    ci [label="CI / GitHub Actions\nRuns Automatically on PRs" fillcolor="#FFF9C4" color="#F57F17" fontcolor="#E65100" width=3.0];
+
+    // Flow
+    new_skill -> test_cases [label="  requires test case  " color="#1565C0" fontcolor="#1565C0"];
+    modify_skill -> test_cases [label="  triggers evals  " color="#1565C0" fontcolor="#1565C0"];
+    test_cases -> runner [color="#7B1FA2" penwidth=2.5];
+    runner -> routing [color="#7B1FA2" penwidth=2.5];
+    routing -> threshold [color="#7B1FA2" penwidth=2.5];
+    threshold -> deploy [label="  PASS  " color="#2E7D32" fontcolor="#2E7D32" penwidth=2.5];
+    threshold -> broken [label="  FAIL  " color="#C62828" fontcolor="#C62828" penwidth=2.5];
+    broken -> modify_skill [label="  iterate  " color="#C62828" fontcolor="#C62828" style=dashed constraint=false];
+    ci -> runner [style=dashed color="#F57F17" fontcolor="#F57F17" label="  automates  " constraint=false];
+}

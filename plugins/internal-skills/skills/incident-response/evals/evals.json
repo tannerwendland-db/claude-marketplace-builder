@@ -1,0 +1,18 @@
+[
+  {
+    "query": "We have a production outage! Our main API has been returning 500 errors for the past 5 minutes and customers are affected. What's the incident response process and who do I need to notify?",
+    "should_trigger": true
+  },
+  {
+    "query": "There's been a potential data breach in our production database — someone accessed records they shouldn't have. What steps should we take to triage and respond to this security incident?",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you help me set up PagerDuty alerts and monitoring for our Databricks pipeline so we're automatically notified when it fails or runs longer than expected?",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to review the execution logs from last Tuesday's batch job run to understand why the processing time doubled compared to previous weeks",
+    "should_trigger": false
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "query": "Create a lucid chart architecture diagram showing our data pipeline from Kafka through Databricks to a Snowflake data warehouse",
+    "should_trigger": true
+  },
+  {
+    "query": "Generate a Graphviz DOT diagram with our diagraming skill of the data flow between our ingestion layer, bronze, silver, and gold tables",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you draw an architecture diagram showing the microservices in our backend — we have auth-service, user-service, payment-service, and notification-service, all talking through a message bus",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you write a Python script using matplotlib to plot our monthly sales data as a bar chart? The data is in a CSV file called sales_2024.csv",
+    "should_trigger": false
+  },
+  {
+    "query": "I need help writing a SQL query to join our bronze and silver tables and calculate monthly revenue by region",
+    "should_trigger": false
+  }
+]

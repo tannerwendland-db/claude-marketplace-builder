@@ -1,0 +1,18 @@
+[
+  {
+    "query": "I want to update the marketplace plugins to get the latest version of all the skills. How do I do that?",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you pull the latest changes from this repo and re-register all the plugins so I have the newest skills available in Claude Code?",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to create a brand new skill for the marketplace — it should help with querying our Snowflake data warehouse. How do I build and add a skill?",
+    "should_trigger": false
+  },
+  {
+    "query": "How do I install the Databricks skills plugin for the first time in my Claude Code setup?",
+    "should_trigger": false
+  }
+]
