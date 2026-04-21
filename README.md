@@ -128,6 +128,20 @@ make evals PLUGIN=databricks-skills  # scoped to one plugin
 make evals FILTER=lineage            # filter by test name substring
 ```
 
+### Running evals against Databricks AI Gateway (optional)
+
+Evals run against whatever provider `claude` is authenticated to — OAuth login works out of the box with no extra config. To route evals through a Databricks AI Gateway endpoint instead, export these in your shell before `make evals`:
+
+```bash
+export ANTHROPIC_AUTH_TOKEN=<databricks PAT or SP token>
+export ANTHROPIC_BASE_URL=https://XXXXXXXXXXXX.ai-gateway.cloud.databricks.com/anthropic
+export ANTHROPIC_MODEL=databricks-claude-sonnet-4-5
+export ANTHROPIC_CUSTOM_HEADERS="x-databricks-use-coding-agent-mode: true"
+export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1
+```
+
+The runner passes the inherited shell environment through unchanged, so these reach the spawned Claude Code process automatically.
+
 ## Make Targets
 
 ```
